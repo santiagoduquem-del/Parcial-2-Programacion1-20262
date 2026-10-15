@@ -25,6 +25,11 @@ public class Cliente extends Persona {
         this(documento, nombreCompleto, numTelefono, correo, codeAfiliacion, 0);
     }
 
+    /** Aplica el descuento del cliente a un valor (se usa DESPUÉS de calcular el recargo) */
+    public double aplicarDescuento(double valor){
+        return valor * (1 - descuento);
+    }
+
     public int getCodeAfiliacion() {
         return codeAfiliacion;
     }

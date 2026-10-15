@@ -1,5 +1,7 @@
 package model;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class Cine {
         this.nombre = nombre;
         this.nit = nit;
         this.direccion = direccion;
-        this.listSalas = new ArrayList<>();      // antes faltaba -> NullPointerException
+        this.listSalas = new ArrayList<>();
         this.listPeliculas = new ArrayList<>();
         this.listFunciones = new ArrayList<>();
         this.listClientes = new ArrayList<>();
@@ -32,12 +34,38 @@ public class Cine {
         this.consecutivoBoleta = 1;
     }
 
-    //PELICULAS
+    // ------------------------------------------------------------------
+    // VALIDACIONES AUXILIARES
+    // ------------------------------------------------------------------
+
+    /** La fecha debe tener formato yyyy-MM-dd y ser una fecha real (así se pueden comparar con equals) */
+    private boolean fechaValida(String fecha){
+        boolean valida = true;
+        try{
+            LocalDate.parse(fecha);
+        }catch(DateTimeParseException | NullPointerException e){
+            valida = false;
+        }
+        return valida;
+    }
+
+    private boolean textoValido(String texto){
+        return texto != null && !texto.trim().isEmpty();
+    }
+
+    private boolean horaValida(int horaInicio){
+        return horaInicio >= 0 && horaInicio <= 2359 && horaInicio % 100 < 60;
+    }
+
+    // ------------------------------------------------------------------
+    // PELÍCULAS (CRUD)
+    // ------------------------------------------------------------------
 
     /** 1. Registrar película (el código no puede existir) */
     public boolean registrarPelicula(int peliCode, String titulo, int duracionMin, String clasifEdad, Genero generoPeli){
         boolean registrada = false;
-        if(duracionMin > 0 && buscarPelicula(peliCode) == null){
+        if(textoValido(titulo) && textoValido(clasifEdad) && generoPeli != null
+                && duracionMin > 0 && buscarPelicula(peliCode) == null){
             Pelicula nueva = new Pelicula(peliCode, titulo, duracionMin, clasifEdad, generoPeli);
             listPeliculas.add(nueva);
             registrada = true;
@@ -62,14 +90,52 @@ public class Cine {
         return new ArrayList<>(listPeliculas);
     }
 
+    /** Una película solo puede cambiar de duración si no tiene funciones (cambiaría la hora de fin) */
+    public boolean actualizarPelicula(int peliCode, String titulo, int duracionMin, String clasifEdad, Genero generoPeli){
+        boolean actualizada = false;
+        Pelicula pelicula = buscarPelicula(peliCode);
+        if(pelicula != null && textoValido(titulo) && textoValido(clasifEdad) && generoPeli != null && duracionMin > 0
+                && (duracionMin == pelicula.getDuracionMin() || !peliculaTieneFunciones(peliCode))){
+            pelicula.setTitulo(titulo);
+            pelicula.setDuracionMin(duracionMin);
+            pelicula.setClasifEdad(clasifEdad);
+            pelicula.setGeneroPeli(generoPeli);
+            actualizada = true;
+        }
+        return actualizada;
+    }
+
+    /** No se puede eliminar una película que tiene funciones programadas */
+    public boolean eliminarPelicula(int peliCode){
+        boolean eliminada = false;
+        Pelicula pelicula = buscarPelicula(peliCode);
+        if(pelicula != null && !peliculaTieneFunciones(peliCode)){
+            listPeliculas.remove(pelicula);
+            eliminada = true;
+        }
+        return eliminada;
+    }
+
+    public boolean peliculaTieneFunciones(int peliCode){
+        boolean tiene = false;
+        for(int i = 0; i < listFunciones.size(); i++){
+            if(listFunciones.get(i).getThePelicula().getPeliCode() == peliCode){
+                tiene = true;
+                break;
+            }
+        }
+        return tiene;
+    }
+
     // ------------------------------------------------------------------
-    // PERSONAS (clientes y operarios)
+    // CLIENTES (CRUD)
     // ------------------------------------------------------------------
 
     /** 2. Registrar cliente (el documento no puede existir, ni como cliente ni como operario) */
     public boolean registrarCliente(String nombre, int documento, String correo, long numTelefono, int codeAfiliacion, double descuento){
         boolean registrado = false;
-        if(descuento >= 0 && descuento <= 1 && buscarPersona(documento) == null){
+        if(textoValido(nombre) && textoValido(correo) && descuento >= 0 && descuento <= 1
+                && buscarPersona(documento) == null){
             Cliente nuevo = new Cliente(documento, nombre, numTelefono, correo, codeAfiliacion, descuento);
             listClientes.add(nuevo);
             registrado = true;
@@ -94,9 +160,55 @@ public class Cine {
         return encontrado;
     }
 
+    public List<Cliente> consultarClientes(){
+        return new ArrayList<>(listClientes);
+    }
+
+    /** El documento identifica al cliente, por eso no se modifica */
+    public boolean actualizarCliente(int documento, String nombreCompleto, long numTelefono, String correo, int codeAfiliacion, double descuento){
+        boolean actualizado = false;
+        Cliente cliente = buscarCliente(documento);
+        if(cliente != null && textoValido(nombreCompleto) && textoValido(correo) && descuento >= 0 && descuento <= 1){
+            cliente.setNombreCompleto(nombreCompleto);
+            cliente.setNumTelefono(numTelefono);
+            cliente.setCorreo(correo);
+            cliente.setCodeAfiliacion(codeAfiliacion);
+            cliente.setDescuento(descuento);
+            actualizado = true;
+        }
+        return actualizado;
+    }
+
+    /** No se puede eliminar un cliente que tiene ventas */
+    public boolean eliminarCliente(int documento){
+        boolean eliminado = false;
+        Cliente cliente = buscarCliente(documento);
+        if(cliente != null && !clienteTieneVentas(documento)){
+            listClientes.remove(cliente);
+            eliminado = true;
+        }
+        return eliminado;
+    }
+
+    public boolean clienteTieneVentas(int documento){
+        boolean tiene = false;
+        for(int i = 0; i < listVentas.size(); i++){
+            if(listVentas.get(i).getTheCliente().getDocumento() == documento){
+                tiene = true;
+                break;
+            }
+        }
+        return tiene;
+    }
+
+    // ------------------------------------------------------------------
+    // OPERARIOS (CRUD)
+    // ------------------------------------------------------------------
+
     public boolean registrarOperario(int documento, String nombreCompleto, long numTelefono, String correo, int codEmpleado, String fechaContratacion, double salario){
         boolean registrado = false;
-        if(buscarOperario(codEmpleado) == null && buscarPersona(documento) == null){
+        if(textoValido(nombreCompleto) && textoValido(correo) && fechaValida(fechaContratacion) && salario > 0
+                && buscarOperario(codEmpleado) == null && buscarPersona(documento) == null){
             Operario nuevo = new Operario(documento, nombreCompleto, numTelefono, correo, codEmpleado, fechaContratacion, salario);
             listOperarios.add(nuevo);
             registrado = true;
@@ -116,6 +228,47 @@ public class Cine {
         return encontrado;
     }
 
+    public List<Operario> consultarOperarios(){
+        return new ArrayList<>(listOperarios);
+    }
+
+    /** El código de empleado y el documento identifican al operario, por eso no se modifican */
+    public boolean actualizarOperario(int codEmpleado, String nombreCompleto, long numTelefono, String correo, String fechaContratacion, double salario){
+        boolean actualizado = false;
+        Operario operario = buscarOperario(codEmpleado);
+        if(operario != null && textoValido(nombreCompleto) && textoValido(correo) && fechaValida(fechaContratacion) && salario > 0){
+            operario.setNombreCompleto(nombreCompleto);
+            operario.setNumTelefono(numTelefono);
+            operario.setCorreo(correo);
+            operario.setFechaContratacion(fechaContratacion);
+            operario.setSalario(salario);
+            actualizado = true;
+        }
+        return actualizado;
+    }
+
+    /** No se puede eliminar un operario que registró ventas */
+    public boolean eliminarOperario(int codEmpleado){
+        boolean eliminado = false;
+        Operario operario = buscarOperario(codEmpleado);
+        if(operario != null && !operarioTieneVentas(codEmpleado)){
+            listOperarios.remove(operario);
+            eliminado = true;
+        }
+        return eliminado;
+    }
+
+    public boolean operarioTieneVentas(int codEmpleado){
+        boolean tiene = false;
+        for(int i = 0; i < listVentas.size(); i++){
+            if(listVentas.get(i).getTheOperario().getCodEmpleado() == codEmpleado){
+                tiene = true;
+                break;
+            }
+        }
+        return tiene;
+    }
+
     /** Busca por documento en clientes y operarios (el documento es único para toda persona) */
     public Persona buscarPersona(int documento){
         Persona encontrada = buscarCliente(documento);
@@ -131,12 +284,13 @@ public class Cine {
     }
 
     // ------------------------------------------------------------------
-    // SALAS
+    // SALAS (CRUD)
     // ------------------------------------------------------------------
 
     public boolean registrarSala(int codigoSala, String nombre, int capMax, TipoSala tipo, int filas, int columnas){
         boolean registrada = false;
-        if(filas > 0 && columnas > 0 && capMax > 0 && capMax <= filas * columnas && buscarSala(codigoSala) == null){
+        if(textoValido(nombre) && tipo != null && filas > 0 && columnas > 0
+                && capMax > 0 && capMax <= filas * columnas && buscarSala(codigoSala) == null){
             Sala nueva = new Sala(codigoSala, nombre, capMax, tipo, filas, columnas);
             listSalas.add(nueva);
             registrada = true;
@@ -156,21 +310,81 @@ public class Cine {
         return encontrada;
     }
 
+    public List<Sala> consultarSalas(){
+        return new ArrayList<>(listSalas);
+    }
+
+    /**
+     * Nombre y tipo se pueden cambiar siempre (el tipo solo afecta ventas futuras, las boletas
+     * ya vendidas conservan su valor). La capacidad, las filas y las columnas solo cambian
+     * si la sala no tiene boletas vendidas.
+     */
+    public boolean actualizarSala(int codigoSala, String nombre, int capMax, TipoSala tipo, int filas, int columnas){
+        boolean actualizada = false;
+        Sala sala = buscarSala(codigoSala);
+        if(sala != null && textoValido(nombre) && tipo != null && filas > 0 && columnas > 0
+                && capMax > 0 && capMax <= filas * columnas){
+            boolean cambiaDistribucion = capMax != sala.getCapMax() || filas != sala.getFilas() || columnas != sala.getColumnas();
+            if(!cambiaDistribucion || !salaTieneBoletasVendidas(codigoSala)){
+                sala.setNombre(nombre);
+                sala.setTipo(tipo);
+                sala.setCapMax(capMax);
+                sala.setFilas(filas);
+                sala.setColumnas(columnas);
+                actualizada = true;
+            }
+        }
+        return actualizada;
+    }
+
+    /** No se puede eliminar una sala que tiene funciones programadas */
+    public boolean eliminarSala(int codigoSala){
+        boolean eliminada = false;
+        Sala sala = buscarSala(codigoSala);
+        if(sala != null && !salaTieneFunciones(codigoSala)){
+            listSalas.remove(sala);
+            eliminada = true;
+        }
+        return eliminada;
+    }
+
+    public boolean salaTieneFunciones(int codigoSala){
+        boolean tiene = false;
+        for(int i = 0; i < listFunciones.size(); i++){
+            if(listFunciones.get(i).getTheSala().getCodigoSala() == codigoSala){
+                tiene = true;
+                break;
+            }
+        }
+        return tiene;
+    }
+
+    public boolean salaTieneBoletasVendidas(int codigoSala){
+        boolean tiene = false;
+        for(int i = 0; i < listFunciones.size(); i++){
+            Funcion funcion = listFunciones.get(i);
+            if(funcion.getTheSala().getCodigoSala() == codigoSala && funcion.getBoletasVendidas() > 0){
+                tiene = true;
+                break;
+            }
+        }
+        return tiene;
+    }
+
     // ------------------------------------------------------------------
-    // FUNCIONES
+    // FUNCIONES (CRUD)
     // ------------------------------------------------------------------
 
     /** 3. Programar función (verificando que no haya conflicto de horarios en la sala) */
-    public boolean programarFuncion(int unicoCode, String fechaPresentacion, int horaInicio, int precioBoleta, Pelicula pelicula, Sala sala){
+    public boolean programarFuncion(int unicoCode, String fechaPresentacion, int horaInicio, double precioBoleta, int codigoPelicula, int codigoSala){
         boolean programada = false;
-        boolean datosValidos = pelicula != null && sala != null && precioBoleta > 0
-                && horaInicio >= 0 && horaInicio <= 2359 && horaInicio % 100 < 60
-                && buscarPelicula(pelicula.getPeliCode()) != null
-                && buscarSala(sala.getCodigoSala()) != null;
+        Pelicula pelicula = buscarPelicula(codigoPelicula);
+        Sala sala = buscarSala(codigoSala);
 
-        if(datosValidos && buscarFuncion(unicoCode) == null){
+        if(pelicula != null && sala != null && fechaValida(fechaPresentacion) && horaValida(horaInicio)
+                && precioBoleta > 0 && buscarFuncion(unicoCode) == null){
             Funcion nueva = new Funcion(unicoCode, fechaPresentacion, horaInicio, precioBoleta, pelicula, sala);
-            if(!conflictoHorario(nueva)){   // antes estaba invertido: programaba solo si HABÍA conflicto
+            if(!conflictoHorario(nueva)){
                 listFunciones.add(nueva);
                 programada = true;
             }
@@ -179,17 +393,14 @@ public class Cine {
     }
 
     /**
-     * Verifica conflicto de horarios: misma sala, misma fecha y rangos
-     * [inicio, fin) que se superponen (fin = inicio + duración de la película).
+     * Verifica si la función entra en conflicto con alguna ya programada.
+     * Se ignora la función con el mismo código (sirve al actualizar una función existente).
      */
     public boolean conflictoHorario(Funcion nueva){
         boolean conflicto = false;
         for(int i = 0; i < listFunciones.size(); i++){
-            Funcion func = listFunciones.get(i);
-            if(func.getTheSala().getCodigoSala() == nueva.getTheSala().getCodigoSala()
-                    && func.getFechaPresentacion().equals(nueva.getFechaPresentacion())
-                    && nueva.getMinutos() < func.getFinMinutos()
-                    && func.getMinutos() < nueva.getFinMinutos()){
+            Funcion existente = listFunciones.get(i);
+            if(existente.getUnicoCode() != nueva.getUnicoCode() && existente.hayConflicto(nueva)){
                 conflicto = true;
                 break;
             }
@@ -209,6 +420,55 @@ public class Cine {
         return encontrada;
     }
 
+    public List<Funcion> consultarFunciones(){
+        return new ArrayList<>(listFunciones);
+    }
+
+    /** Todas las funciones (horarios y salas) en las que se proyecta una película */
+    public List<Funcion> consultarFuncionesPorPelicula(int peliCode){
+        List<Funcion> resultado = new ArrayList<>();
+        for(int i = 0; i < listFunciones.size(); i++){
+            if(listFunciones.get(i).getThePelicula().getPeliCode() == peliCode){
+                resultado.add(listFunciones.get(i));
+            }
+        }
+        return resultado;
+    }
+
+    /**
+     * Actualiza fecha, hora y precio base. La película y la sala no cambian (para eso se elimina y se
+     * programa de nuevo). Si ya hay boletas vendidas solo se permite cambiar el precio (aplica a
+     * ventas futuras). El nuevo horario no puede chocar con otra función de la sala.
+     */
+    public boolean actualizarFuncion(int unicoCode, String fechaPresentacion, int horaInicio, double precioBoleta){
+        boolean actualizada = false;
+        Funcion funcion = buscarFuncion(unicoCode);
+        if(funcion != null && fechaValida(fechaPresentacion) && horaValida(horaInicio) && precioBoleta > 0){
+            boolean cambiaHorario = !fechaPresentacion.equals(funcion.getFechaPresentacion()) || horaInicio != funcion.getHoraInicio();
+            if(!cambiaHorario || funcion.getBoletasVendidas() == 0){
+                Funcion candidata = new Funcion(unicoCode, fechaPresentacion, horaInicio, precioBoleta, funcion.getThePelicula(), funcion.getTheSala());
+                if(!conflictoHorario(candidata)){
+                    funcion.setFechaPresentacion(fechaPresentacion);
+                    funcion.setHoraInicio(horaInicio);
+                    funcion.setPrecioBoleta(precioBoleta);
+                    actualizada = true;
+                }
+            }
+        }
+        return actualizada;
+    }
+
+    /** No se puede eliminar una función que ya tiene boletas vendidas (primero se anulan las ventas) */
+    public boolean eliminarFuncion(int unicoCode){
+        boolean eliminada = false;
+        Funcion funcion = buscarFuncion(unicoCode);
+        if(funcion != null && funcion.getBoletasVendidas() == 0){
+            listFunciones.remove(funcion);
+            eliminada = true;
+        }
+        return eliminada;
+    }
+
     /** Verifica si un asiento ya está vendido para una función. Retorna true si está ocupado. */
     public boolean verificarAsientoOcupado(Funcion funcion, int fila, int numAsiento){
         return funcion.asientoOcupado(fila, numAsiento);
@@ -225,7 +485,7 @@ public class Cine {
     }
 
     // ------------------------------------------------------------------
-    // VENTAS
+    // VENTAS (crear, consultar y anular; una venta emitida no se edita)
     // ------------------------------------------------------------------
 
     /**
@@ -239,7 +499,7 @@ public class Cine {
         Cliente cliente = buscarCliente(documentoCliente);
         Funcion funcion = buscarFuncion(codigoFuncion);
 
-        if(operario != null && cliente != null && funcion != null
+        if(operario != null && cliente != null && funcion != null && fechaValida(fechaRealizada)
                 && buscarVenta(codigoVenta) == null
                 && asientosDisponibles(funcion, asientos)){
 
@@ -256,7 +516,7 @@ public class Cine {
     /** Valida que todos los asientos pedidos existan, estén libres, no se repitan y haya capacidad */
     private boolean asientosDisponibles(Funcion funcion, int[][] asientos){
         boolean disponibles = asientos != null && asientos.length > 0
-                && funcion.getListBoletas().size() + asientos.length <= funcion.getTheSala().getCapMax();
+                && funcion.hayCapacidad(asientos.length);
 
         for(int i = 0; disponibles && i < asientos.length; i++){
             if(asientos[i] == null || asientos[i].length != 2
@@ -274,28 +534,32 @@ public class Cine {
         return disponibles;
     }
 
+    /** Agrega una boleta a una venta existente (buscándola por su código) */
+    public boolean agregarBoletaAVenta(int codigoVenta, int fila, int numAsiento){
+        boolean agregada = false;
+        Venta venta = buscarVenta(codigoVenta);
+        if(venta != null){
+            agregada = agregarBoletaAVenta(venta, fila, numAsiento);
+        }
+        return agregada;
+    }
+
     /** Agrega una boleta a la venta (si el asiento es válido y está libre en la función de la venta) */
-    public boolean agregarBoletaAVenta(Venta venta, int fila, int numAsiento){
+    private boolean agregarBoletaAVenta(Venta venta, int fila, int numAsiento){
         boolean agregada = false;
         Funcion funcion = venta.getTheFuncion();
 
         if(funcion.asientoValido(fila, numAsiento)
                 && !funcion.asientoOcupado(fila, numAsiento)
-                && funcion.getListBoletas().size() < funcion.getTheSala().getCapMax()){
+                && funcion.hayCapacidad(1)){
 
-            double valor = calcularValorBoleta(funcion, venta.getTheCliente());
+            double valor = funcion.calcularValorBoleta(venta.getTheCliente());
             Boleta boleta = new Boleta(consecutivoBoleta++, fila, numAsiento, valor);
             venta.agregarBoleta(boleta);
-            funcion.getListBoletas().add(boleta);   // así el asiento queda ocupado para esa función
+            funcion.agregarBoleta(boleta);   // así el asiento queda ocupado para esa función
             agregada = true;
         }
         return agregada;
-    }
-
-    /** Valor de la boleta = precio base x (1 + recargo) x (1 - descuento) */
-    public double calcularValorBoleta(Funcion funcion, Cliente cliente){
-        double recargo = funcion.getTheSala().getTipo().getRecargo();
-        return funcion.getPrecioBoleta() * (1 + recargo) * (1 - cliente.getDescuento());
     }
 
     public Venta buscarVenta(int codigoVenta){
@@ -308,6 +572,24 @@ public class Cine {
             }
         }
         return encontrada;
+    }
+
+    public List<Venta> consultarVentas(){
+        return new ArrayList<>(listVentas);
+    }
+
+    /** Anula una venta: elimina la venta y libera los asientos de sus boletas */
+    public boolean anularVenta(int codigoVenta){
+        boolean anulada = false;
+        Venta venta = buscarVenta(codigoVenta);
+        if(venta != null){
+            for(int i = 0; i < venta.getListBoletas().size(); i++){
+                venta.getTheFuncion().quitarBoleta(venta.getListBoletas().get(i));
+            }
+            listVentas.remove(venta);
+            anulada = true;
+        }
+        return anulada;
     }
 
     /** 5. Valor total de una venta buscándola por su código (retorna -1 si no existe) */

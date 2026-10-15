@@ -20,6 +20,16 @@ public class Sala {
         this.columnas = columnas;
     }
 
+    /** Recargo que aplica la sala según su tipo (tradicional 0 %, VIP 30 %, 3D 20 %) */
+    public double calcularRecargo(){
+        return tipo.getRecargo();
+    }
+
+    /** Indica si el asiento (fila, número) existe en la distribución de filas y columnas de la sala */
+    public boolean asientoValido(int fila, int numAsiento){
+        return fila >= 1 && fila <= filas && numAsiento >= 1 && numAsiento <= columnas;
+    }
+
     public int getCodigoSala() {
         return codigoSala;
     }
