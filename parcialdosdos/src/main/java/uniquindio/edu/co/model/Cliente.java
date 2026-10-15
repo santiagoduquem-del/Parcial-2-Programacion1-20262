@@ -14,11 +14,12 @@ public class Cliente extends Persona{
      * @param numTelefono
      * @param correo         de la persona
      */
-    public Cliente(int documento, String nombreCompleto, int numTelefono, String correo, int codeAfiliacion, double  descuento) {
+    public Cliente(int documento, String nombreCompleto, int numTelefono, String correo, int codeAfiliacion) {
         super(documento, nombreCompleto, numTelefono, correo);
 
         this.codeAfiliacion = codeAfiliacion;
-        this.descuento = descuento;
+        this.descuento = 0;
+
     }
 
     public int getCodeAfiliacion() {
@@ -29,11 +30,12 @@ public class Cliente extends Persona{
         this.codeAfiliacion = codeAfiliacion;
     }
 
-    public double getDescuento() {
-        return descuento;
-    }
 
-    public void setDescuento(double descuento) {
-        this.descuento = descuento;
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "codeAfiliacion=" + codeAfiliacion +
+                '}';
     }
 }

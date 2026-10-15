@@ -47,4 +47,13 @@ public class Operario extends Persona{
     public void setSalario(double salario) {
         this.salario = salario;
     }
+
+    @Override
+    public String toString() {
+        return "Operario{" +
+                "codEmpleado=" + codEmpleado +
+                ", fechaContratacion='" + fechaContratacion + '\'' +
+                ", salario=" + salario +
+                '}';
+    }
 }
