@@ -1,4 +1,4 @@
-package main;
+package co.edu.uniquindio.parcial2;
 
 import model.*;
 
@@ -443,7 +443,7 @@ public class Main {
 
     private static void calcularOcupacion() {
         Funcion funcion = elegirFuncion();
-        double ocupacion = cine.calcularPorcentajeOcupacion(funcion.getUnicoCode());
+        double ocupacion = cine.calcularPorcentajeOcupacion(funcion.getUnicoCodigo());
         mostrar(resumenFuncion(funcion) + "\n\nBoletas vendidas: " + funcion.getBoletasVendidas()
                 + " de " + funcion.getTheSala().getCapMax()
                 + "\nPorcentaje de ocupación: " + String.format("%.2f", ocupacion) + " %");
@@ -463,7 +463,7 @@ public class Main {
         }
         double precio = leerDouble("Precio base de la boleta:", 1, 1000000, formatoNumero(funcion.getPrecioBoleta()));
 
-        if (cine.actualizarFuncion(funcion.getUnicoCode(), fecha, hora, precio)) {
+        if (cine.actualizarFuncion(funcion.getUnicoCodigo(), fecha, hora, precio)) {
             mostrar("Función actualizada correctamente.");
         } else {
             mostrar("No se pudo actualizar: el nuevo horario se cruza con otra función de la misma sala.");
@@ -476,7 +476,7 @@ public class Main {
             mostrar("No se puede eliminar: la función tiene " + funcion.getBoletasVendidas()
                     + " boletas vendidas.\nAnule primero las ventas correspondientes.");
         } else if (confirmar("¿Eliminar la función?\n" + describir(funcion))) {
-            cine.eliminarFuncion(funcion.getUnicoCode());
+            cine.eliminarFuncion(funcion.getUnicoCodigo());
             mostrar("Función eliminada.");
         }
     }
@@ -674,7 +674,7 @@ public class Main {
             throw new OperacionCancelada();
         }
 
-        if (cine.realizarVenta(codigoVenta, fecha, codEmpleado, documento, funcion.getUnicoCode(), asientos)) {
+        if (cine.realizarVenta(codigoVenta, fecha, codEmpleado, documento, funcion.getUnicoCodigo(), asientos)) {
             mostrarTexto("Venta realizada", textoFactura(codigoVenta));
         } else {
             mostrar("No se pudo realizar la venta.");
@@ -809,7 +809,7 @@ public class Main {
     }
 
     private static String describir(Funcion f) {
-        return "[" + f.getUnicoCode() + "] " + f.getThePelicula().getTitulo() + " | " + f.getFechaPresentacion()
+        return "[" + f.getUnicoCodigo() + "] " + f.getThePelicula().getTitulo() + " | " + f.getFechaPresentacion()
                 + " " + formatoHora(f.getHoraInicio()) + " - " + formatoHora(f.getHoraFin())
                 + " | " + f.getTheSala().getNombre() + " | base " + dinero(f.getPrecioBoleta())
                 + " | vendidas " + f.getBoletasVendidas() + "/" + f.getTheSala().getCapMax();
@@ -845,7 +845,7 @@ public class Main {
     }
 
     private static String resumenFuncion(Funcion f) {
-        return "[" + f.getUnicoCode() + "] " + f.getThePelicula().getTitulo() + " - " + f.getFechaPresentacion()
+        return "[" + f.getUnicoCodigo() + "] " + f.getThePelicula().getTitulo() + " - " + f.getFechaPresentacion()
                 + " " + formatoHora(f.getHoraInicio()) + " - " + f.getTheSala().getNombre();
     }
 

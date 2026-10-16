@@ -11,6 +11,17 @@ public class Sala {
     private int columnas;
 
 
+    /**
+     * constructor clase sala
+     * @param codigoSala
+     * @param nombre
+     * @param capMax
+     * @param tipo
+     * @param filas
+     * @param columnas
+     */
+
+
     public Sala(int codigoSala, String nombre, int capMax, TipoSala tipo, int filas, int columnas){
         this.codigoSala = codigoSala;
         this.nombre = nombre;

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Funcion {
 
-    private int unicoCode;
+    private int unicoCodigo;
     private String fechaPresentacion;   // formato yyyy-MM-dd
     private int horaInicio;             // formato HHmm, ej: 1430 = 2:30 p.m.
     private double precioBoleta;        // precio base
@@ -15,8 +15,18 @@ public class Funcion {
     private Sala theSala;
     private List<Boleta> listBoletas;
 
-    public Funcion(int unicoCode, String fechaPresentacion, int horaInicio, double precioBoleta, Pelicula thePelicula, Sala theSala){
-        this.unicoCode = unicoCode;
+    /**
+     * Constructor clase funcion
+     * @param unicoCodigo
+     * @param fechaPresentacion
+     * @param horaInicio
+     * @param precioBoleta
+     * @param thePelicula
+     * @param theSala
+     */
+
+    public Funcion(int unicoCodigo, String fechaPresentacion, int horaInicio, double precioBoleta, Pelicula thePelicula, Sala theSala){
+        this.unicoCodigo = unicoCodigo;
         this.fechaPresentacion = fechaPresentacion;
         this.horaInicio = horaInicio;
         this.precioBoleta = precioBoleta;
@@ -125,12 +135,12 @@ public class Funcion {
         return mapa.toString();
     }
 
-    public int getUnicoCode() {
-        return unicoCode;
+    public int getUnicoCodigo() {
+        return unicoCodigo;
     }
 
-    public void setUnicoCode(int unicoCode) {
-        this.unicoCode = unicoCode;
+    public void setUnicoCodigo(int unicoCodigo) {
+        this.unicoCodigo = unicoCodigo;
     }
 
     public String getFechaPresentacion() {
@@ -184,7 +194,7 @@ public class Funcion {
     @Override
     public String toString() {
         return "Funcion{" +
-                "unicoCode=" + unicoCode +
+                "unicoCode=" + unicoCodigo +
                 ", fechaPresentacion='" + fechaPresentacion + '\'' +
                 ", horaInicio=" + horaInicio +
                 ", horaFin=" + getHoraFin() +

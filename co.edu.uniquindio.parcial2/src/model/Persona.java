@@ -8,7 +8,7 @@ public class Persona {
     private String correo;
 
     /**
-     * Método constructor de la clase Persona
+     * constructor de la clase Persona
      * @param documento documento de identidad de la persona (único)
      * @param nombreCompleto nombre completo de la persona
      * @param numTelefono número de teléfono de la persona

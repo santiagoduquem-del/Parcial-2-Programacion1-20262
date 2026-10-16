@@ -8,6 +8,15 @@ public class Pelicula {
     private String clasifEdad;
     private Genero generoPeli;
 
+    /**
+     * Constructor clase pelicula
+     * @param peliCode
+     * @param titulo
+     * @param duracionMin
+     * @param clasifEdad
+     * @param generoPeli
+     */
+
     public Pelicula(int peliCode, String titulo, int duracionMin, String clasifEdad, Genero generoPeli){
         this.peliCode = peliCode;
         this.titulo = titulo;

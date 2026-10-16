@@ -7,6 +7,14 @@ public class Boleta {
     private int numAsiento;
     private double valor;
 
+    /**
+     * Contructor clase Boleta
+     * @param codigoBoleta
+     * @param fila
+     * @param numAsiento
+     * @param valor
+     */
+
     public Boleta(int codigoBoleta, int fila, int numAsiento, double valor){
         this.codigoBoleta = codigoBoleta;
         this.fila = fila;

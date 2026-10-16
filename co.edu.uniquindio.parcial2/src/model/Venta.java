@@ -14,6 +14,16 @@ public class Venta {
     private Funcion theFuncion;     // una venta corresponde a una sola función
     private List<Boleta> listBoletas;
 
+
+    /**
+     * Constructor clase ventas
+     * @param codigoVenta
+     * @param fechaRealizada
+     * @param theOperario
+     * @param theCliente
+     * @param theFuncion
+     */
+
     public Venta(int codigoVenta, String fechaRealizada, Operario theOperario, Cliente theCliente, Funcion theFuncion){
         this.codigoVenta = codigoVenta;
         this.fechaRealizada = fechaRealizada;
@@ -91,7 +101,7 @@ public class Venta {
                 ", fechaRealizada='" + fechaRealizada + '\'' +
                 ", theOperario=" + theOperario.getNombreCompleto() +
                 ", theCliente=" + theCliente.getNombreCompleto() +
-                ", theFuncion=" + theFuncion.getUnicoCode() +
+                ", theFuncion=" + theFuncion.getUnicoCodigo() +
                 ", listBoletas=" + listBoletas +
                 '}';
     }

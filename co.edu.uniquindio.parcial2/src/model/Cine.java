@@ -21,6 +21,13 @@ public class Cine {
 
     private int consecutivoBoleta;   // genera códigos únicos de boleta
 
+    /**
+     * Constructor clase Cine
+     * @param nombre
+     * @param nit
+     * @param direccion
+     */
+
     public Cine(String nombre, int nit, String direccion){
         this.nombre = nombre;
         this.nit = nit;
@@ -34,9 +41,7 @@ public class Cine {
         this.consecutivoBoleta = 1;
     }
 
-    // ------------------------------------------------------------------
-    // VALIDACIONES AUXILIARES
-    // ------------------------------------------------------------------
+    // Validacion de auxiliares
 
     /** La fecha debe tener formato yyyy-MM-dd y ser una fecha real (así se pueden comparar con equals) */
     private boolean fechaValida(String fecha){
@@ -57,9 +62,7 @@ public class Cine {
         return horaInicio >= 0 && horaInicio <= 2359 && horaInicio % 100 < 60;
     }
 
-    // ------------------------------------------------------------------
-    // PELÍCULAS (CRUD)
-    // ------------------------------------------------------------------
+    //CRUD para peliculas
 
     /** 1. Registrar película (el código no puede existir) */
     public boolean registrarPelicula(int peliCode, String titulo, int duracionMin, String clasifEdad, Genero generoPeli){
@@ -72,6 +75,12 @@ public class Cine {
         }
         return registrada;
     }
+
+    /**
+     * Metodo que sirve para poder buscar peliculas por codigo
+     * @param peliCode
+     * @return
+     */
 
     public Pelicula buscarPelicula(int peliCode){
         Pelicula encontrada = null;
@@ -116,6 +125,12 @@ public class Cine {
         return eliminada;
     }
 
+    /**
+     * Metodo para verificar si una pelicula tiene funciones
+     * @param peliCode
+     * @return
+     */
+
     public boolean peliculaTieneFunciones(int peliCode){
         boolean tiene = false;
         for(int i = 0; i < listFunciones.size(); i++){
@@ -127,9 +142,7 @@ public class Cine {
         return tiene;
     }
 
-    // ------------------------------------------------------------------
-    // CLIENTES (CRUD)
-    // ------------------------------------------------------------------
+    //CRUD de cliente
 
     /** 2. Registrar cliente (el documento no puede existir, ni como cliente ni como operario) */
     public boolean registrarCliente(String nombre, int documento, String correo, long numTelefono, int codeAfiliacion, double descuento){
@@ -148,6 +161,12 @@ public class Cine {
         return registrarCliente(nombre, documento, correo, numTelefono, codeAfiliacion, 0);
     }
 
+    /**
+     * Metodo para buscar un cliente por el numero de su documento
+     * @param documento
+     * @return
+     */
+
     public Cliente buscarCliente(int documento){
         Cliente encontrado = null;
         for(int i = 0; i < listClientes.size(); i++){
@@ -159,6 +178,8 @@ public class Cine {
         }
         return encontrado;
     }
+
+
 
     public List<Cliente> consultarClientes(){
         return new ArrayList<>(listClientes);
@@ -190,6 +211,12 @@ public class Cine {
         return eliminado;
     }
 
+    /**
+     * Metodo para validar si un cliete tiene compras
+     * @param documento
+     * @return
+     */
+
     public boolean clienteTieneVentas(int documento){
         boolean tiene = false;
         for(int i = 0; i < listVentas.size(); i++){
@@ -201,9 +228,29 @@ public class Cine {
         return tiene;
     }
 
-    // ------------------------------------------------------------------
-    // OPERARIOS (CRUD)
-    // ------------------------------------------------------------------
+    /**
+     * CRUD de el operario
+     * @param documento
+     * @param nombreCompleto
+     * @param numTelefono
+     * @param correo
+     * @param codEmpleado
+     * @param fechaContratacion
+     * @param salario
+     * @return
+     */
+
+    /**
+     * Metodo para registar un operario con susu atributos
+     * @param documento
+     * @param nombreCompleto
+     * @param numTelefono
+     * @param correo
+     * @param codEmpleado
+     * @param fechaContratacion
+     * @param salario
+     * @return
+     */
 
     public boolean registrarOperario(int documento, String nombreCompleto, long numTelefono, String correo, int codEmpleado, String fechaContratacion, double salario){
         boolean registrado = false;
@@ -215,6 +262,12 @@ public class Cine {
         }
         return registrado;
     }
+
+    /**
+     * Metodo para buscar un operario con el codigo de empleado
+     * @param codEmpleado
+     * @return
+     */
 
     public Operario buscarOperario(int codEmpleado){
         Operario encontrado = null;
@@ -258,6 +311,12 @@ public class Cine {
         return eliminado;
     }
 
+    /**
+     * Metodo para verificar si un operario tene ventas
+     * @param codEmpleado
+     * @return
+     */
+
     public boolean operarioTieneVentas(int codEmpleado){
         boolean tiene = false;
         for(int i = 0; i < listVentas.size(); i++){
@@ -283,9 +342,18 @@ public class Cine {
         return encontrada;
     }
 
-    // ------------------------------------------------------------------
-    // SALAS (CRUD)
-    // ------------------------------------------------------------------
+    //CRUD de la sala
+
+    /**registrar una sala
+     * Metodo para
+     * @param codigoSala
+     * @param nombre
+     * @param capMax
+     * @param tipo
+     * @param filas
+     * @param columnas
+     * @return
+     */
 
     public boolean registrarSala(int codigoSala, String nombre, int capMax, TipoSala tipo, int filas, int columnas){
         boolean registrada = false;
@@ -297,6 +365,12 @@ public class Cine {
         }
         return registrada;
     }
+
+    /**
+     * metodo para buscar una sala con el codigo de la sala
+     * @param codigoSala
+     * @return
+     */
 
     public Sala buscarSala(int codigoSala){
         Sala encontrada = null;
@@ -348,6 +422,12 @@ public class Cine {
         return eliminada;
     }
 
+    /**
+     * metodo para verificar si una sala tiene funciones
+     * @param codigoSala
+     * @return
+     */
+
     public boolean salaTieneFunciones(int codigoSala){
         boolean tiene = false;
         for(int i = 0; i < listFunciones.size(); i++){
@@ -358,6 +438,12 @@ public class Cine {
         }
         return tiene;
     }
+
+    /**
+     * metodo para verificar si una sala tiene boletas vendidas
+     * @param codigoSala
+     * @return
+     */
 
     public boolean salaTieneBoletasVendidas(int codigoSala){
         boolean tiene = false;
@@ -371,9 +457,7 @@ public class Cine {
         return tiene;
     }
 
-    // ------------------------------------------------------------------
-    // FUNCIONES (CRUD)
-    // ------------------------------------------------------------------
+    //CRUD de funciones
 
     /** 3. Programar función (verificando que no haya conflicto de horarios en la sala) */
     public boolean programarFuncion(int unicoCode, String fechaPresentacion, int horaInicio, double precioBoleta, int codigoPelicula, int codigoSala){
@@ -400,7 +484,7 @@ public class Cine {
         boolean conflicto = false;
         for(int i = 0; i < listFunciones.size(); i++){
             Funcion existente = listFunciones.get(i);
-            if(existente.getUnicoCode() != nueva.getUnicoCode() && existente.hayConflicto(nueva)){
+            if(existente.getUnicoCodigo() != nueva.getUnicoCodigo() && existente.hayConflicto(nueva)){
                 conflicto = true;
                 break;
             }
@@ -408,11 +492,17 @@ public class Cine {
         return conflicto;
     }
 
+    /**
+     * Metodo para buscar una funcion por codigo
+     * @param unicoCode
+     * @return
+     */
+
     public Funcion buscarFuncion(int unicoCode){
         Funcion encontrada = null;
         for(int i = 0; i < listFunciones.size(); i++){
             Funcion funcion = listFunciones.get(i);
-            if(funcion.getUnicoCode() == unicoCode){
+            if(funcion.getUnicoCodigo() == unicoCode){
                 encontrada = funcion;
                 break;
             }
@@ -484,9 +574,7 @@ public class Cine {
         return ocupacion;
     }
 
-    // ------------------------------------------------------------------
-    // VENTAS (crear, consultar y anular; una venta emitida no se edita)
-    // ------------------------------------------------------------------
+    //ventas
 
     /**
      * 4. Realizar venta de boletas para un cliente en una función.
@@ -619,36 +707,60 @@ public class Cine {
         return factura;
     }
 
-    // ------------------------------------------------------------------
-    // GETTERS
-    // ------------------------------------------------------------------
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getNombre()
+    { return nombre; }
+
+    public void setNombre(String nombre)
+    { this.nombre = nombre; }
 
     public int getNit() { return nit; }
-    public void setNit(int nit) { this.nit = nit; }
 
-    public String getDireccion() { return direccion; }
-    public void setDireccion(String direccion) { this.direccion = direccion; }
+    public void setNit(int nit)
+    { this.nit = nit; }
 
-    public List<Sala> getListSalas() { return listSalas; }
-    public void setListSalas(List<Sala> listSalas) { this.listSalas = listSalas; }
+    public String getDireccion()
+    { return direccion; }
 
-    public List<Pelicula> getListPeliculas() { return listPeliculas; }
-    public void setListPeliculas(List<Pelicula> listPeliculas) { this.listPeliculas = listPeliculas; }
+    public void setDireccion(String direccion)
+    { this.direccion = direccion; }
 
-    public List<Funcion> getListFunciones() { return listFunciones; }
-    public void setListFunciones(List<Funcion> listFunciones) { this.listFunciones = listFunciones; }
+    public List<Sala> getListSalas()
+    { return listSalas; }
 
-    public List<Cliente> getListClientes() { return listClientes; }
-    public void setListClientes(List<Cliente> listClientes) { this.listClientes = listClientes; }
+    public void setListSalas(List<Sala> listSalas)
+    { this.listSalas = listSalas; }
 
-    public List<Operario> getListOperarios() { return listOperarios; }
-    public void setListOperarios(List<Operario> listOperarios) { this.listOperarios = listOperarios; }
+    public List<Pelicula> getListPeliculas()
+    { return listPeliculas; }
 
-    public List<Venta> getListVentas() { return listVentas; }
-    public void setListVentas(List<Venta> listVentas) { this.listVentas = listVentas; }
+    public void setListPeliculas(List<Pelicula> listPeliculas)
+    { this.listPeliculas = listPeliculas; }
+
+
+    public List<Funcion> getListFunciones()
+    { return listFunciones; }
+
+    public void setListFunciones(List<Funcion> listFunciones)
+    { this.listFunciones = listFunciones; }
+
+    public List<Cliente> getListClientes()
+    { return listClientes; }
+
+    public void setListClientes(List<Cliente> listClientes)
+    { this.listClientes = listClientes; }
+
+    public List<Operario> getListOperarios()
+    { return listOperarios; }
+
+    public void setListOperarios(List<Operario> listOperarios)
+    { this.listOperarios = listOperarios; }
+
+    public List<Venta> getListVentas()
+    { return listVentas; }
+    public void setListVentas(List<Venta> listVentas)
+    { this.listVentas = listVentas; }
 
     @Override
     public String toString() {
